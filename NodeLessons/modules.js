@@ -20,7 +20,7 @@ exports.goodbye = function(){
 }
 
 //inisde our application file
-app.js
+//app.js
 var hello = require('./custom_hello');
 var gb = require('./custom_goodbye');
 
