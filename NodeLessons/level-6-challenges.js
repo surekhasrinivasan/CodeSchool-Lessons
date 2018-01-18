@@ -83,3 +83,96 @@ io.on('connection', function(client) {
 });
 server.listen(8080);
 
+// 5. Saving Client Data 
+
+//In our real-time Q&A app, we want to allow each client only one question at a time, but how 
+//do we enforce this rule? We can use socket.io's ability to save data on the client, 
+//so whenever a question is asked, we first want to check the question_asked value on the client.
+//app.js
+var express = require('express');
+var app = express();
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+
+io.on('connection', function(client) {
+  console.log("Client connected...");
+
+  client.on('question', function(question) {
+      // c. Finally, when a client emits a 'question' event, check to make sure question_asked is 
+        //not already set to true. We only want to allow one question per user, so make sure that 
+        //we only set the value of question_asked and broadcast the question to other clients 
+        //when the value of question_asked is not already true.
+        if(!client.question_asked){
+    // b. Second, when a client emits a 'question' event, we want to broadcast that question to the other clients.
+    client.broadcast.emit('question', question);
+    // a. First, when a client emits a 'question' event, we want to set the value of question_asked to true.
+    client.question_asked = true;
+        }
+  });
+});
+server.listen(8080);
+
+// 6. Answering Questions 
+
+//Clients can also answer each other's questions, so let's build that feature by first 
+//listening for the 'answer' event on the client, which will send us both the question and 
+//answer, which we want to broadcast out to the rest of the connected clients.
+
+//app.js
+var express = require('express');
+var app = express();
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+
+io.sockets.on('connection', function(client) {
+  console.log("Client connected...");
+
+  // listen for answers here
+  
+  // a. With the client, listen for the 'answer' event from clients. 
+  //This listener will have both a question and answer to broadcast so make sure 
+  //to include both as function parameters.
+  client.on('answer', function(question, answer){
+    // b. Now, emit the 'answer' event on all the other 
+    //clients connected, passing them the question and answer data.
+    client.broadcast.emit('answer', question, answer);
+  });
+
+  client.on('question', function(question) {
+    if(!client.question_asked) {
+      client.question_asked = true;
+      client.broadcast.emit('question', question);
+    }
+  });
+});
+
+server.listen(8080);
+
+
+// 7. Answering Question Client
+
+//Now on the client, listen for the 'answer' event and then add the appropriate data to the DOM.
+// index.html
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+  var server = io.connect('http://localhost:8080');
+
+  server.on('question', function(question) {
+    insertQuestion(question);
+  });
+  // a. Listen for the 'answer' event off of the server.
+  server.on('answer', function(question, answer){
+    // b. Call the answerQuestion function, passing in both the question and the answer that was broadcast from the server.
+    answerQuestion(question, answer);
+  });
+   
+  //Don't worry about these methods, just assume 
+  //they insert the correct html into the DOM
+  // var insertQuestion = function(question) {
+  // }
+
+  // var answerQuestion = function(question, answer) {
+  // }
+</script>
+ 
