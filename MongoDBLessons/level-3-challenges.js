@@ -89,3 +89,60 @@ db.wands.find(
   }
 )
 
+// 7. Precise Projections
+
+//We'd like to have an index page where users can see the name of all the wands we have in 
+//our database.
+
+//Write a query that will find all wands, but this time project only the name field. 
+//Don't worry about the _id showing up in the results for now.
+db.wands.find({},{"name": true})
+
+//We've got all the names, but they're all jumbled up. Add a cursor method to sort 
+//the names alphabetically.
+db.wands.find({},{"name": true}).sort({"name":1})
+
+// 8.  The Realm of Requirements
+
+//We need to create a report detailing all the wand information except for 
+//their price and lengths. Since non-developers will be looking at this report, 
+//let's remove the _id as well.
+
+//Write a query for all wands that excludes the price, lengths, and _id field.
+db.wands.find({},{"price": false,"lengths":false,"_id":false})
+
+//The criteria for the report have changed. We need to write a query to include 
+//the name and powers fields.
+
+//Include only the needed fields, but continue to exclude to _id field.
+db.wands.find({},{"name": true,"powers":true,"_id":false})
+
+// 9. Casting the Count
+
+//For the sake of science and all things good, let's find out how many wands only 
+//have a level_required of 2.
+
+//Write a query to find wands with a level_required of 2, and then use the 
+//appropriate cursor method to count the total.
+db.wands.find({"level_required":2}).count()
+
+// 10. The Cursor's Crystal Ball
+
+//Finish the code below so that only 8 wands are returned by the cursor for each page:
+db.wands.find({}).skip(0).limit(8)
+//Correct
+
+// 11. Fantastical Findings
+
+//Some really famous wizards and sorceresses are interested in finding out information
+//about the most expensive wands we have. Let's pull the data on our top three most 
+//expensive wands.
+
+//First, let's write a query to match all wands.
+db.wands.find()
+
+//Next, add a cursor method to sort the wands in descending order by their price field.
+db.wands.find().sort({"price":-1})
+
+//Lastly, add another cursor method to limit the results to only 3 documents.
+db.wands.find().sort({"price":-1}).limit(3)
