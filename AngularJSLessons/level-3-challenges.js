@@ -344,10 +344,122 @@ code continued from above.....
   </body>
 </html>
 
+//6. Form Validation 
+
+//Use the fancy directives you just learned to validate the new review form.
 
 
+a. Turn off default HTML validation.(add novalidate to form)
 
+c. Prevent the submit if not $valid. (add reviewForm.$valid to ng-submit)
 
+ <!--  Review Form -->
+  <form name="reviewForm" ng-controller="ReviewController as reviewCtrl" ng-submit="reviewForm.$valid && reviewCtrl.addReview(product)" novalidate>
 
+    <!--  Live Preview -->
+    <blockquote >
+      <strong>{{reviewCtrl.review.stars}} Stars</strong>
+      {{reviewCtrl.review.body}}
+      <cite class="clearfix">—{{reviewCtrl.review.author}}</cite>
+    </blockquote>
+b. Mark stars & author as required fields.
 
+    <!--  Review Form -->
+    <h4>Submit a Review</h4>
+    <fieldset class="form-group">
+      <select ng-model="reviewCtrl.review.stars" class="form-control" ng-options="stars for stars in [5,4,3,2,1]" title="Stars" required>
+        <option value="">Rate the Product</option>
+      </select>
+    </fieldset>
+    <fieldset class="form-group">
+      <textarea ng-model="reviewCtrl.review.body" class="form-control" placeholder="Write a short review of the product..." title="Review"></textarea>
+    </fieldset>
+    <fieldset class="form-group">
+      <input ng-model="reviewCtrl.review.author" type="email" class="form-control" placeholder="jimmyDean@example.org" title="Email" required/>
+    </fieldset>
+    <fieldset class="form-group">
+      <input type="submit" class="btn btn-primary pull-right" value="Submit Review" />
+    </fieldset>
+  </form>
 
+// 7. Form Styling
+
+//Give the defined classes in your css colors. See the magic of ng-invalid/ng-valid at work!
+
+a. For elements with both the .ng-invalid and .ng-dirty classes, give the border-color of red.
+
+application.css
+
+.ng-invalid.ng-dirty {
+  border-color: red;
+}
+b. For ng-valid && ng-dirty, give a green border-color.
+
+.ng-valid.ng-dirty {
+  border-color: green;
+}
+
+// 8.  Showing CreatedOn Date 
+
+//It's time to show when a review was created using the createdOn property. Follow the task below to add this in.
+
+app.js 
+
+(function() {
+  var app = angular.module('gemStore', []);
+
+  app.controller('StoreController', function() {
+    this.products = gems;
+  });
+
+  app.controller("TabController", function() {
+    this.tab = 1;
+
+    this.isSet = function(checkTab) {
+      return this.tab === checkTab;
+    };
+
+    this.setTab = function(setTab) {
+      this.tab = setTab;
+    };
+  });
+
+  app.controller('GalleryController', function(){
+    this.current = 0;
+
+    this.setCurrent = function(imageNumber){
+      this.current = imageNumber || 0;
+    };
+  });
+
+  app.controller("ReviewController", function(){
+
+    this.review = {};
+
+//a. Upon saving a review, we're running the addReview function in our app.js JavaScript file. 
+//Before the review is pushed onto the array, add to this.review a new property createdOn 
+//with a value Date.now(). 
+    this.addReview = function(product){
+      this.review.createdOn=Date.now();
+      product.reviews.push(this.review);
+      this.review = {};
+    };
+  });
+
+//b. In the review template, we're already displaying most of the information about our review. 
+//Add the createdOn date to the review within the cite element. We want it to say "-<Author> 
+//on <date>".  
+
+//index.html
+            <ul>
+              <h4>Reviews</h4>
+              <li ng-repeat="review in product.reviews">
+                <blockquote>
+                  <strong>{{review.stars}} Stars</strong>
+                  {{review.body}}
+// c. Use the date filter on the createdOn property in the template.
+
+                  <cite class="clearfix">—{{review.author}} on {{ review.createdOn | date }}</cite>
+                </blockquote>
+              </li>
+            </ul>
