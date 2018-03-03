@@ -252,3 +252,122 @@ app.directive("productDescription", function() {
 <!--  Spec Tab's Content  -->
           <div ng-show="tab.isSet(2)" product-specs></div>
 
+// 4. Refactoring Product Tabs 
+
+//We feel like the Product Tabs section could be better managed if it were a directive.
+
+//app.js
+// a. Create an element directive called productTabs.
+app.directive("productTabs", function() {
+    return {
+      restrict: 'E',
+// b. Tell your new directive to use the product-tabs.html template with the templateUrl attribute.
+      templateUrl: 'product-tabs.html'
+      
+      };
+  });
+
+// c. Give our productTabs directive all the tab functionality that is currently inside our TabController. 
+//Make sure that you do not delete the TabController yet. We don't want to break the site.  
+//app.js 
+app.directive("productTabs", function() {
+    return {
+      restrict: 'E',
+      templateUrl: 'product-tabs.html',
+      controller: function() {
+      this.tab = 1;
+
+    this.isSet = function(checkTab) {
+      return this.tab === checkTab;
+    };
+    this.setTab = function(activeTab) {
+      this.tab = activeTab;
+    };
+    },
+//d. Add the controllerAs attribute to your directive setting it to tab so the directive knows 
+//what all the references to tab in product-tabs.html are.
+    controllerAs: 'tab'
+    };            
+ });
+//e. Put the tabs section inside of the provided product-tabs.html. Remove the ng-controller 
+//from the section inside the file once moved.
+//product-tabs.html
+<section>
+          <ul class="nav nav-pills">
+            <li ng-class="{ active:tab.isSet(1) }">
+              <a href ng-click="tab.setTab(1)">Description</a>
+            </li>
+            <li ng-class="{ active:tab.isSet(2) }">
+              <a href ng-click="tab.setTab(2)">Specs</a>
+            </li>
+            <li ng-class="{ active:tab.isSet(3) }">
+              <a href ng-click="tab.setTab(3)">Reviews</a>
+            </li>
+          </ul>
+          <!--  Description Tab's Content  -->
+          <div ng-show="tab.isSet(1)" ng-include="'product-description.html'">
+          </div>
+
+          <!--  Spec Tab's Content  -->
+          <div product-specs ng-show="tab.isSet(2)"></div>
+
+          <!--  Review Tab's Content  -->
+          <product-reviews ng-show="tab.isSet(3)"></product-reviews>
+
+        </section>
+//f. Now remove the product tabs section from index.html and the TabController from app.js.
+//g. Use our new productTabs directive where the tabs section used to be in our index.html.
+<!-- Product Tabs  -->
+        <product-tabs></product-tabs>
+
+
+//5. Refactoring Product Gallery
+
+//Now that we've separated the Product Tabs, why not separate the Gallery too?        
+
+//a. Create an element directive called productGallery.
+//app.js
+app.directive('productGallery', function(){
+    return {
+      restrict: 'E',
+      //b. Tell your new directive to use the product-gallery.html template with the templateUrl attribute.
+      templateUrl: 'product-gallery.html'
+    };
+  });
+//c. Give our productGallery directive all the gallery functionality that is currently inside 
+//our GalleryController. Make sure that you do not delete the GalleryController yet. 
+//We don't want to break the site.
+app.directive('productGallery', function(){
+    return {
+      restrict: 'E',
+      templateUrl: 'product-gallery.html',
+      controller: function() {
+        this.current = 0;
+        this.setCurrent = function(imageNumber){
+        this.current = imageNumber || 0;
+      };
+    },
+//d. Add the controllerAs attribute to your directive setting it to gallery so the directive 
+//knows what all the references to gallery in product-gallery.html are.    
+    controllerAs: 'gallery'
+    };   
+  });  
+//e. Put the gallery div inside of the provided product-gallery.html. Remove the 
+//ng-controller from the div inside the file once moved.
+
+//product-gallery.html
+<div ng-show="product.images.length">
+          <div class="img-wrap">
+            <img ng-src="{{product.images[gallery.current]}}" />
+          </div>
+          <ul class="img-thumbnails clearfix">
+            <li class="small-image pull-left thumbnail" ng-repeat="image in product.images">
+              <img ng-src="{{image}}" />
+            </li>
+          </ul>
+        </div>
+//f. Now remove the image gallery div from index.html and the GalleryController from app.js.
+//g. Use our new productGallery directive where the gallery div used to be in our index.html.
+//index.html
+        <!-- Image Gallery  -->
+        <product-gallery></product-gallery>
