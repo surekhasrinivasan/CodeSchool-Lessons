@@ -195,3 +195,52 @@
     </div>
   </body>
 </html>
+
+
+// 2. Built-in AngularJS Services
+
+//We can use the built-in $http Service to make requests to a server (or in our case a json file). 
+//Give our StoreController access to the products using a service.
+
+// app.js 
+(function() {
+  var app = angular.module('gemStore', ['store-directives']);
+
+// a. Inject the $http service into our StoreController.
+
+  // app.controller('StoreController', function(){
+  //   var store = this;
+  //   store.products = [];
+
+  // });
+
+  app.controller('StoreController',['$http', function($http) {
+    var store = this;
+    store.products = [];
+    
+    //b. get the store-products.json using the $http Service.
+    //$http.get('/store-products.json');
+    
+    //c. Attach a success to our get call.
+    //d. Name the first parameter of the success function data.
+     $http.get('/store-products.json').success(function(data){
+      
+       //e.Give our StoreController access to the products by setting products equal to the 
+       //data given to us with the http service's success promise.
+      store.products = data;
+    });
+
+  }]);
+
+
+  app.controller('ReviewController', function() {
+    this.review = {};
+
+    this.addReview = function(product) {
+      product.reviews.push(this.review);
+
+      this.review = {};
+    };
+  });
+})();
+//All tasks have been completed!
