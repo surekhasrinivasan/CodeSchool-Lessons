@@ -21,3 +21,27 @@
 
 // Single Query Access
 
+
+//4.  Quantifying Queries 
+//What's the minimum number of queries we'd have to write in order to retrieve a 
+//document and its referenced data?
+
+// 1
+//Answer: 2
+// 3
+
+//5. Chalice of Choices 
+//Which modeling option would give us all the data we need with a single query, 
+//support for atomic writes, and is great for data that is strongly related?
+
+// Answer: Embedding
+
+// Referencing
+
+//6. Cauldrons of Considerations
+// Which data modeling decision doesn't have default support for atomic writes 
+//across multiple documents and should be utilized with care?
+
+// Embedded
+
+// Answer: Referenced
